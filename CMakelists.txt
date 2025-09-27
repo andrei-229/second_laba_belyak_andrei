@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(first_laba)
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG v1.15.0
+  TLS_VERIFY false
+)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+set(SOURCE_EXE main.cpp)
+
+add_library(six_class src/six.cpp)  # или my_pow/pow.h если это header-only
+target_include_directories(six_class PUBLIC six_class)
+
+# Основное исполняемое приложение
+add_executable(run_file ${SOURCE_EXE})
+target_link_libraries(run_file PRIVATE six_class)
+
+# enable_testing()
+
+# add_executable(tests test/tests.cpp)
+# target_link_libraries(tests ans_lib gtest_main)
+
+# # Добавление тестов в тестовый набор
+# add_test(NAME MyProjectTests COMMAND tests)
