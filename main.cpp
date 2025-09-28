@@ -5,6 +5,11 @@ using namespace std;
 
 int main(){
 
-    Six arr(2);
+    Six arr{"15"};
+    arr.print(cout);
+
+    Six copy_arr(move(arr));
+    arr.print(cout);
+    copy_arr.print(cout);
     return 0;
 }

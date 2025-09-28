@@ -30,35 +30,45 @@ bool Six::is_digit_0_to_5(unsigned char x){
 Six::Six(const std::initializer_list<unsigned char> &initialValues)
 {
     std::cout << "Конструктор из списка инициализации" << std::endl;
+    for (auto i = initialValues.end() - 1; i >= initialValues.begin(); --i)
+    {
+        std::cout << *i << std::endl;
+        if (!is_digit_0_to_5(static_cast<unsigned char>(*i)))
+        {
+            throw std::invalid_argument("Массив должен содержать шестеричные элементы");
+        }
+    }
     arraySize = initialValues.size();
     dataArray = new unsigned char[arraySize];
 
     // Копируем значения из списка инициализации
     size_t index = 0;
-    for (const auto &value : initialValues){
-        for (const auto &sym : initialValues)
-            if (!is_digit_0_to_5(sym))
-            {
-                throw std::invalid_argument("Массив должен содержать шестеричные элементы");
-            }
-    }
-    for (const auto &value : initialValues)
+    for (auto i = initialValues.end() - 1; i >= initialValues.begin(); --i)
     {
-        dataArray[index++] = value;
+        dataArray[index++] = *i;
     }
 }
 
 // Конструктор из строки
 Six::Six(const std::string &sourceString)
 {
+    for (auto i = sourceString.end() - 1; i >= sourceString.begin(); --i)
+    {
+        // std::cout << *i << std::endl;
+        if (!is_digit_0_to_5(*i))
+        {
+            throw std::invalid_argument("Массив должен содержать шестеричные элементы");
+        }
+    }
     std::cout << "Конструктор из строки" << std::endl;
     arraySize = sourceString.size();
     dataArray = new unsigned char[arraySize];
 
+    size_t index = 0;
     // Копируем символы из строки
-    for (size_t i = 0; i < arraySize; ++i)
+    for (auto i = sourceString.end() - 1; i >= sourceString.begin(); --i)
     {
-        dataArray[i] = static_cast<unsigned char>(sourceString[i]);
+        dataArray[index++] = *i;
     }
 }
 
@@ -128,6 +138,7 @@ std::ostream &Six::print(std::ostream &outputStream)
     {
         outputStream << dataArray[i];
     }
+    outputStream << '\n';
     return outputStream;
 }
 
