@@ -15,6 +15,38 @@ bool Six::is_digit_0_to_5(unsigned char x){
 int Six::char_to_int(unsigned char x) {return int(x) - 48;}
 char Six::int_to_char(int x) {return char(x+48);}
 
+int Six::arr_to_int(std::string x){
+    int s = 0;
+    int k = 1;
+    for (auto i = x.begin(); i < x.end(); ++i){
+        s += char_to_int(*i)*k;
+        k *= 10;
+    }
+    return s;
+    // int ans = 0;
+    // k /= 10;
+    // int k2 = 1;
+    // while (s > 0){
+    //     ans += (s / k) * k2;
+    //     s %= k;
+    //     k2 *= 10;
+    //     k /= 10;
+    // }
+    // return ans;
+}
+
+std::string Six::make_ans(unsigned char* x, int size){
+    unsigned char *ans = new unsigned char[size];
+    std::string str = reinterpret_cast<char *>(x);
+    int index = 0;
+    for (auto i = str.end() - 1; i >= str.begin(); --i)
+    {
+        ans[index++] = *i;
+    }
+    str = reinterpret_cast<char *>(ans);
+    return str;
+}
+
 std::pair<unsigned char*, int> Six::sum(const Six &it, const Six &other)
 {
     int s = 0;
@@ -197,21 +229,30 @@ Six Six::add(const Six &other)
 
 Six Six::operator+(const Six &other){
     std::pair para = sum(*this, other);
-    unsigned char* x = para.first;
-    int size = para.second;
-    unsigned char *ans = new unsigned char[size];
-    std::string str = reinterpret_cast<char *>(x);
-    int index = 0;
-    for (auto i = str.end() - 1; i >= str.begin(); --i)
-    {
-        ans[index++] = *i;
-    }
-    str = reinterpret_cast<char *>(ans);
-    return Six{str};
+    std::string ans = make_ans(para.first, para.second);
+    return Six{ans};
 }
 
-    // Вычитание массивов (может выбрасывать исключение)
-    Six Six::remove(const Six &other)
+bool Six::operator>(const Six &other){
+    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) > arr_to_int(reinterpret_cast<char *>(other.dataArray));
+}
+
+bool Six::operator<(const Six &other){
+    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) < arr_to_int(reinterpret_cast<char *>(other.dataArray));
+}
+
+bool Six::operator==(const Six &other){
+    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) == arr_to_int(reinterpret_cast<char *>(other.dataArray));
+}
+bool Six::operator>=(const Six &other){
+    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) >= arr_to_int(reinterpret_cast<char *>(other.dataArray));
+}
+bool Six::operator<=(const Six &other){
+    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) <= arr_to_int(reinterpret_cast<char *>(other.dataArray));
+}
+
+// Вычитание массивов (может выбрасывать исключение)
+Six Six::remove(const Six &other)
 {
     // Проверяем, можно ли вычесть (размер не может стать отрицательным)
     if (arraySize < other.arraySize)

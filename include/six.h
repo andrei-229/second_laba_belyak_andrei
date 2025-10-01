@@ -38,11 +38,18 @@ public:
     Six add(const Six &other);
     Six operator+(const Six &other);
 
-        // Вычитание массивов (может выбрасывать исключение)
-        Six remove(const Six &other);
+    bool operator>(const Six &other);
+    bool operator<(const Six &other);
+    bool operator==(const Six &other);
+    bool operator>=(const Six &other);
+    bool operator<=(const Six &other);
+
+    // Вычитание массивов (может выбрасывать исключение)
+    Six remove(const Six &other);
 
     // Сравнение массивов по размеру
     bool equals(const Six &other) const;
+    int arr_to_int(std::string x);
 
     // Вывод массива в поток
     std::ostream &print(std::ostream &outputStream);
@@ -58,6 +65,7 @@ private:
     int char_to_int(unsigned char x);
     char int_to_char(int x);
     std::pair<unsigned char*, int> sum(const Six &it, const Six &other);
+    std::string make_ans(unsigned char* x, int size);
 
     size_t arraySize;     // Размер массива
     unsigned char *dataArray; // Указатель на динамический массив

@@ -7,14 +7,16 @@ int main(){
 
     Six arr("55");
     // arr.print(cout);
-    Six arr2{"1"};
+    Six arr2{"55"};
     // Six copy_arr(move(arr));
     arr.print(cout);
     arr2.print(cout);
     // unsigned char *x = arr.sum(arr2);
     // copy_arr.print(cout);
     Six a = arr.add(arr2);
+    bool x = arr2 > arr;
+    cout << x << endl;
     a.print(cout);
-    // cout <<  << endl;
+    // cout << a << endl;
     return 0;
 }
