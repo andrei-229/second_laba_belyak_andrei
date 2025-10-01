@@ -12,10 +12,83 @@ bool Six::is_digit_0_to_5(unsigned char x){
     return '0' <= x && x <= '5';
 }
 
+int Six::char_to_int(unsigned char x) {return int(x) - 48;}
+char Six::int_to_char(int x) {return char(x+48);}
+
+std::pair<unsigned char*, int> Six::sum(const Six &it, const Six &other)
+{
+    int s = 0;
+    size_t ost = 0;
+    size_t other_size = other.arraySize;
+    size_t my_size = it.arraySize;
+    int k = 1;
+    size_t cnt = 0;
+    std::cout << "hui" << std::endl;
+    if (other_size >= my_size){
+        
+        size_t i = 0;
+        int moi, oth, tmp_s;
+        for (;i < my_size; ++i){
+            moi = char_to_int(it.dataArray[i]);
+            std::cout << moi << "<-" << std::endl;
+            oth = char_to_int(other.dataArray[i]);
+            s += ((moi + oth + ost) % 6) * k;
+            ost = (moi + oth + ost) / 6;
+            k *= 10;
+            cnt += 1;
+        }
+        for (;i < other_size; ++i){
+            oth = char_to_int(other.dataArray[i]);
+            s += ((oth+ost) % 6) * k;
+            ost = (oth+ost) / 6;
+            k *= 10;
+            cnt += 1;
+        }
+        s += ost * k;
+        cnt += (ost) ? 1 : 0;
+        std::cout << cnt << std::endl;
+        std::cout << s << std::endl;
+    }
+    else{
+        size_t i = 0;
+        int moi, oth, tmp_s;
+        for (; i < other_size; ++i)
+        {
+            moi = char_to_int(it.dataArray[i]);
+            std::cout << moi << "<-" << std::endl;
+            oth = char_to_int(other.dataArray[i]);
+            s += ((moi + oth + ost) % 6) * k;
+            ost = (moi + oth + ost) / 6;
+            k *= 10;
+            cnt += 1;
+        }
+        for (; i < my_size; ++i)
+        {
+            moi = char_to_int(it.dataArray[i]);
+            s += ((moi + ost) % 6) * k;
+            ost = (moi + ost) / 6;
+            k *= 10;
+            cnt += 1;
+        }
+        s += ost * k;
+        cnt += (ost) ? 1 : 0;
+        std::cout << cnt << std::endl;
+        std::cout << s << std::endl;
+    }
+    unsigned char *arr = new unsigned char[cnt+1];
+    int index = 0;
+    while (s > 0){
+        arr[index++] = int_to_char(s%10);
+        s /= 10;
+    }
+    return {arr, cnt};
+}
+
     // Конструктор с заполнением
     Six::Six(const size_t &arraySize, unsigned char defaultValue)
 {
     std::cout << "Конструктор с заполнением" << std::endl;
+
     this->arraySize = arraySize;
     this->dataArray = new unsigned char[arraySize];
 
@@ -30,15 +103,17 @@ bool Six::is_digit_0_to_5(unsigned char x){
 Six::Six(const std::initializer_list<unsigned char> &initialValues)
 {
     std::cout << "Конструктор из списка инициализации" << std::endl;
+    // std::cout << &initialValues[0] << std::endl;
     for (auto i = initialValues.end() - 1; i >= initialValues.begin(); --i)
     {
-        std::cout << *i << std::endl;
+        // std::cout << *i << std::endl;
         if (!is_digit_0_to_5(static_cast<unsigned char>(*i)))
         {
             throw std::invalid_argument("Массив должен содержать шестеричные элементы");
         }
     }
     arraySize = initialValues.size();
+    std::cout << arraySize << std::endl;
     dataArray = new unsigned char[arraySize];
 
     // Копируем значения из списка инициализации
@@ -106,11 +181,37 @@ Six::Six(Six &&other) noexcept
 Six Six::add(const Six &other)
 {
     // Создаем новый массив с размером, равным сумме размеров
-    return Six(this->arraySize + other.arraySize, '1');
+    std::pair para = sum(*this, other);
+    unsigned char *x = para.first;
+    int size = para.second;
+    unsigned char *ans = new unsigned char[size];
+    std::string str = reinterpret_cast<char *>(x);
+    int index = 0;
+    for (auto i = str.end() - 1; i >= str.begin(); --i)
+    {
+        ans[index++] = *i;
+    }
+    str = reinterpret_cast<char *>(ans);
+    return Six{str};
 }
 
-// Вычитание массивов (может выбрасывать исключение)
-Six Six::remove(const Six &other)
+Six Six::operator+(const Six &other){
+    std::pair para = sum(*this, other);
+    unsigned char* x = para.first;
+    int size = para.second;
+    unsigned char *ans = new unsigned char[size];
+    std::string str = reinterpret_cast<char *>(x);
+    int index = 0;
+    for (auto i = str.end() - 1; i >= str.begin(); --i)
+    {
+        ans[index++] = *i;
+    }
+    str = reinterpret_cast<char *>(ans);
+    return Six{str};
+}
+
+    // Вычитание массивов (может выбрасывать исключение)
+    Six Six::remove(const Six &other)
 {
     // Проверяем, можно ли вычесть (размер не может стать отрицательным)
     if (arraySize < other.arraySize)

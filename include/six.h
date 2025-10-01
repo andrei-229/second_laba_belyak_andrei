@@ -1,5 +1,7 @@
 #include <string>
 #include <iostream>
+#include <utility>
+#include <algorithm>
 
 // Класс Six - демонстрация управления динамической памятью
 // Показывает различные конструкторы, включая перемещающий конструктор (C++11)
@@ -34,9 +36,10 @@ public:
 
     // Сложение массивов (создает новый массив)
     Six add(const Six &other);
+    Six operator+(const Six &other);
 
-    // Вычитание массивов (может выбрасывать исключение)
-    Six remove(const Six &other);
+        // Вычитание массивов (может выбрасывать исключение)
+        Six remove(const Six &other);
 
     // Сравнение массивов по размеру
     bool equals(const Six &other) const;
@@ -52,6 +55,10 @@ public:
 private:
     // === ДАННЫЕ-ЧЛЕНЫ ===
     bool is_digit_0_to_5(unsigned char x);
+    int char_to_int(unsigned char x);
+    char int_to_char(int x);
+    std::pair<unsigned char*, int> sum(const Six &it, const Six &other);
+
     size_t arraySize;     // Размер массива
     unsigned char *dataArray; // Указатель на динамический массив
 };

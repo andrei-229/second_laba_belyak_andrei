@@ -5,11 +5,16 @@ using namespace std;
 
 int main(){
 
-    Six arr{"15"};
+    Six arr("55");
+    // arr.print(cout);
+    Six arr2{"1"};
+    // Six copy_arr(move(arr));
     arr.print(cout);
-
-    Six copy_arr(move(arr));
-    arr.print(cout);
-    copy_arr.print(cout);
+    arr2.print(cout);
+    // unsigned char *x = arr.sum(arr2);
+    // copy_arr.print(cout);
+    Six a = arr.add(arr2);
+    a.print(cout);
+    // cout <<  << endl;
     return 0;
 }
