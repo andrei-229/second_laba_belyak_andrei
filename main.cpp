@@ -5,7 +5,7 @@ using namespace std;
 
 int main(){
 
-    Six arr("55");
+    Six arr("13");
     // arr.print(cout);
     Six arr2{"55"};
     // Six copy_arr(move(arr));
@@ -14,8 +14,8 @@ int main(){
     // unsigned char *x = arr.sum(arr2);
     // copy_arr.print(cout);
     Six a = arr.add(arr2);
-    bool x = arr2 > arr;
-    cout << x << endl;
+    Six x = arr2 + arr;
+    // cout << x << endl;
     a.print(cout);
     // cout << a << endl;
     return 0;
