@@ -22,10 +22,10 @@ target_include_directories(six_class PUBLIC six_class)
 add_executable(run_file ${SOURCE_EXE})
 target_link_libraries(run_file PRIVATE six_class)
 
-# enable_testing()
+enable_testing()
 
-# add_executable(tests test/tests.cpp)
-# target_link_libraries(tests ans_lib gtest_main)
+add_executable(tests test/tests.cpp)
+target_link_libraries(tests six_class gtest_main)
 
-# # Добавление тестов в тестовый набор
-# add_test(NAME MyProjectTests COMMAND tests)
+# Добавление тестов в тестовый набор
+add_test(NAME MyProjectTests COMMAND tests)

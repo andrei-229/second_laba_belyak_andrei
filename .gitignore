@@ -13,3 +13,4 @@ CMakeUserPresets.json
 lib
 lib*
 run_file
+tests

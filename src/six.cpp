@@ -1,9 +1,6 @@
 #include "../include/six.h"
 
-// === РЕАЛИЗАЦИЯ КОНСТРУКТОРОВ ===
-
-// Конструктор по умолчанию
-Six::Six() : arraySize(0), dataArray(nullptr)
+Six::Six() : arraySize(0), dataArray("")
 {
     std::cout << "Конструктор по умолчанию" << std::endl;
 }
@@ -25,105 +22,146 @@ int Six::arr_to_int(std::string x){
     return s;
 }
 
-std::string Six::make_ans(unsigned char* x, int size){
-    unsigned char *ans = new unsigned char[size];
-    std::string str = reinterpret_cast<char *>(x);
+std::string Six::make_ans(std::string x){
+    std::string ans = "";
     int index = 0;
-    for (auto i = str.end() - 1; i >= str.begin(); --i)
+    for (auto i = x.end() - 1; i >= x.begin(); --i)
     {
-        ans[index++] = *i;
+        ans += *i;
     }
-    str = reinterpret_cast<char *>(ans);
-    return str;
+    return ans;
 }
 
-std::pair<unsigned char*, int> Six::sum(const Six &it, const Six &other)
+// std::string Six::make_ans(unsigned char *x, int size)
+// {
+//     std::string result;
+//     // Собираем строку в правильном порядке
+//     for (int i = size - 1; i >= 0; --i)
+//     {
+//         result += x[i];
+//     }
+//     delete[] x; // Очищаем память
+//     return result;
+// }
+
+std::string Six::sum(const Six &it, const Six &other)
 {
     int s = 0;
     size_t ost = 0;
+
     size_t other_size = other.arraySize;
     size_t my_size = it.arraySize;
+
     if (my_size > other_size){return sum(other, it);}
+
     int k = 1;
     size_t cnt = 0;
-    std::cout << "hui" << std::endl;
     size_t i = 0;
     int moi, oth, tmp_s;
+
     for (;i < my_size; ++i){
         moi = char_to_int(it.dataArray[i]);
-        std::cout << moi << "<-" << std::endl;
         oth = char_to_int(other.dataArray[i]);
+
         s += ((moi + oth + ost) % 6) * k;
         ost = (moi + oth + ost) / 6;
+
         k *= 10;
         cnt += 1;
     }
     for (;i < other_size; ++i){
         oth = char_to_int(other.dataArray[i]);
+
         s += ((oth+ost) % 6) * k;
         ost = (oth+ost) / 6;
+
         k *= 10;
         cnt += 1;
     }
     s += ost * k;
     cnt += (ost) ? 1 : 0;
-    std::cout << cnt << std::endl;
-    std::cout << s << std::endl;
-    unsigned char *arr = new unsigned char[cnt+1];
+
+    std::string arr = "";
     int index = 0;
+
     while (s > 0){
-        arr[index++] = int_to_char(s%10);
+        arr += int_to_char(s%10);
         s /= 10;
     }
-    return {arr, cnt};
+    return arr;
 }
 
-    // Конструктор с заполнением
-    Six::Six(const size_t &arraySize, unsigned char defaultValue)
+std::string Six::raz(const Six &it, const Six &other)
 {
-    std::cout << "Конструктор с заполнением" << std::endl;
-
-    this->arraySize = arraySize;
-    this->dataArray = new unsigned char[arraySize];
-
-    // Заполняем массив значением по умолчанию
-    for (size_t i = 0; i < arraySize; ++i)
+    if (arr_to_int(it.dataArray) <= arr_to_int(other.dataArray))
     {
-        this->dataArray[i] = defaultValue;
+        std::string arr = "0";
+        return arr;
     }
-}
+    int s = 0;
+    size_t ost = 0;
 
-// Конструктор из списка инициализации (C++11)
-Six::Six(const std::initializer_list<unsigned char> &initialValues)
-{
-    std::cout << "Конструктор из списка инициализации" << std::endl;
-    // std::cout << &initialValues[0] << std::endl;
-    for (auto i = initialValues.end() - 1; i >= initialValues.begin(); --i)
+    size_t other_size = other.arraySize;
+    size_t my_size = it.arraySize;
+
+    int k = 1;
+    size_t cnt = 0;
+    size_t i = 0;
+    int moi, oth, tmp_s;
+
+    for (; i < other_size; ++i)
     {
-        // std::cout << *i << std::endl;
-        if (!is_digit_0_to_5(static_cast<unsigned char>(*i)))
-        {
-            throw std::invalid_argument("Массив должен содержать шестеричные элементы");
+        moi = char_to_int(it.dataArray[i]);
+        oth = char_to_int(other.dataArray[i]);
+
+        if (moi < oth && !ost){
+            s += (moi+6-oth)*k;
+            ost = 1;
         }
+        else if (!moi && oth && ost){
+            s += (5-oth)*k;
+        }
+        else if (moi-ost < oth && ost){
+            s += (moi-ost+6-oth)*k;
+        }
+        else{
+            s += (moi-ost-oth)*k;
+            ost = 0;
+        }
+        k *= 10;
+        cnt += 1;
+        
     }
-    arraySize = initialValues.size();
-    std::cout << arraySize << std::endl;
-    dataArray = new unsigned char[arraySize];
-
-    // Копируем значения из списка инициализации
-    size_t index = 0;
-    for (auto i = initialValues.end() - 1; i >= initialValues.begin(); --i)
+    for (; i < my_size; ++i)
     {
-        dataArray[index++] = *i;
+        moi = char_to_int(it.dataArray[i]);
+        if (!moi && ost){
+            s += 5*k;
+        }
+        else{
+            moi -= ost;
+            ost = 0;
+        }
+        s += moi * k;
+        k *= 10;
+        cnt += 1;
     }
+    cnt -= (moi) ? 0 : 1;
+    std::string arr = "";
+    int index = 0;
+    while (s > 0)
+    {
+        arr += int_to_char(s % 10);
+        s /= 10;
+    }
+    return arr;
 }
 
-// Конструктор из строки
+
 Six::Six(const std::string &sourceString)
 {
     for (auto i = sourceString.end() - 1; i >= sourceString.begin(); --i)
     {
-        // std::cout << *i << std::endl;
         if (!is_digit_0_to_5(*i))
         {
             throw std::invalid_argument("Массив должен содержать шестеричные элементы");
@@ -131,126 +169,101 @@ Six::Six(const std::string &sourceString)
     }
     std::cout << "Конструктор из строки" << std::endl;
     arraySize = sourceString.size();
-    dataArray = new unsigned char[arraySize];
+    dataArray = "";
 
     size_t index = 0;
-    // Копируем символы из строки
     for (auto i = sourceString.end() - 1; i >= sourceString.begin(); --i)
     {
-        dataArray[index++] = *i;
+        dataArray += *i;
     }
 }
 
-// Копирующий конструктор (глубокое копирование)
 Six::Six(const Six &other)
 {
     std::cout << "Копирующий конструктор" << std::endl;
     arraySize = other.arraySize;
-    dataArray = new unsigned char[arraySize];
-
-    // Глубокое копирование данных
-    for (size_t i = 0; i < arraySize; ++i)
+    dataArray = "";
+    for (auto i = other.dataArray.begin(); i < other.dataArray.end(); ++i)
     {
-        dataArray[i] = other.dataArray[i];
+        dataArray += *i;
     }
 }
-
-// Перемещающий конструктор (C++11) - "крадет" ресурсы
 Six::Six(Six &&other) noexcept
 {
     std::cout << "Перемещающий конструктор" << std::endl;
 
-    // "Крадем" ресурсы у другого объекта
     arraySize = other.arraySize;
     dataArray = other.dataArray;
 
-    // Обнуляем другой объект, чтобы деструктор не освободил память
     other.arraySize = 0;
-    other.dataArray = nullptr;
+    other.dataArray = "";
 }
 
-// === РЕАЛИЗАЦИЯ ОПЕРАЦИЙ ===
-
-// Сложение массивов (создает новый массив)
 Six Six::add(const Six &other)
 {
-    // Создаем новый массив с размером, равным сумме размеров
-    std::pair para = sum(*this, other);
-    std::string ans = make_ans(para.first, para.second);
+    std::string para = sum(*this, other);
+    std::string ans = make_ans(para);
     return Six{ans};
 }
 
 Six Six::operator+(const Six &other){
-    std::pair para = sum(*this, other);
-    std::string ans = make_ans(para.first, para.second);
+    std::string para = sum(*this, other);
+    std::string ans = make_ans(para);
+    return Six{ans};
+}
+
+Six Six::sub(const Six &other)
+{
+    std::string para = raz(*this, other);
+    std::string ans = make_ans(para);
+    return Six{ans};
+}
+
+Six Six::operator-(const Six &other){
+    std::string para = raz(*this, other);
+    std::string ans = make_ans(para);
     return Six{ans};
 }
 
 bool Six::operator>(const Six &other){
-    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) > arr_to_int(reinterpret_cast<char *>(other.dataArray));
+    return arr_to_int(this->dataArray) > arr_to_int(other.dataArray);
 }
 
 bool Six::operator<(const Six &other){
-    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) < arr_to_int(reinterpret_cast<char *>(other.dataArray));
+    return arr_to_int(this->dataArray) < arr_to_int(other.dataArray);
 }
 
 bool Six::operator==(const Six &other){
-    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) == arr_to_int(reinterpret_cast<char *>(other.dataArray));
+    return arr_to_int(this->dataArray) == arr_to_int(other.dataArray);
 }
 bool Six::operator>=(const Six &other){
-    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) >= arr_to_int(reinterpret_cast<char *>(other.dataArray));
+    return arr_to_int(this->dataArray) >= arr_to_int(other.dataArray);
 }
 bool Six::operator<=(const Six &other){
-    return arr_to_int(reinterpret_cast<char *>(this->dataArray)) <= arr_to_int(reinterpret_cast<char *>(other.dataArray));
+    return arr_to_int(this->dataArray) <= arr_to_int(other.dataArray);
 }
 
-// Вычитание массивов (может выбрасывать исключение)
-Six Six::remove(const Six &other)
-{
-    // Проверяем, можно ли вычесть (размер не может стать отрицательным)
-    if (arraySize < other.arraySize)
-    {
-        throw std::logic_error("Размер массива не может быть отрицательным");
-    }
-
-    // Уменьшаем размер
-    arraySize -= other.arraySize;
-
-    // Возвращаем ссылку на текущий объект
-    return *this;
-}
-
-// Сравнение массивов по размеру
-bool Six::equals(const Six &other) const
-{
-    return arraySize == other.arraySize;
-}
-
-// Вывод массива в поток
 std::ostream &Six::print(std::ostream &outputStream)
 {
-    for (size_t i = 0; i < arraySize; ++i)
+    for (auto i = dataArray.end() - 1; i >= dataArray.begin(); --i)
     {
-        outputStream << dataArray[i];
+        outputStream << *i;
     }
-    outputStream << '\n';
+    if (arraySize)
+    {
+        outputStream << '\n';
+    }
     return outputStream;
 }
 
-// === РЕАЛИЗАЦИЯ ДЕСТРУКТОРА ===
-
-// Деструктор - освобождает динамическую память
 Six::~Six() noexcept
 {
     std::cout << "Деструктор" << std::endl;
 
-    // Освобождаем память, если она была выделена
-    if (dataArray != nullptr)
+    if (dataArray != "")
     {
-        delete[] dataArray;
-        dataArray = nullptr;
+        dataArray = "";
     }
 
-    // Обнуляем размер для безопасности
     arraySize = 0;
 }
